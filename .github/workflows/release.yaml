@@ -88,7 +88,6 @@ jobs:
             "assetcache-exporter_${GITHUB_REF_NAME#v}_darwin_arm64.pkg"
 
       - name: Add package to release
-        uses: softprops/action-gh-release@3d0d9888cb7fd7b750713d6e236d1fcb99157228 # zizmor: ignore[superfluous-actions] v3.0.2
-        if: github.ref_type == 'tag'
-        with:
-          files: assetcache-exporter_*_darwin_arm64.pkg
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh release upload "$GITHUB_REF_NAME" assetcache-exporter_*_darwin_arm64.pkg --clobber

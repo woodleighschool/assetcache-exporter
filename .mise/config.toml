@@ -70,7 +70,7 @@ depends = ["go-fmt-check"]
 
 [tasks.workflow-lint]
 description = "Lint GitHub Actions workflows"
-run = "zizmor --offline .github/workflows"
+run = "zizmor --offline --no-ignores .github/workflows"
 
 [tasks.clean]
 description = "Remove local build outputs"
