@@ -1,0 +1,2 @@
+[pre-commit.commands.format-yaml]
+run = "oxfmt --no-error-on-unmatched-pattern {staged_files}"

@@ -1,0 +1,25 @@
+{
+  $schema: "https://docs.renovatebot.com/renovate-schema.json",
+  extends: ["local>woodleighschool/renovate-config"],
+  postUpdateOptions: ["gomodTidy", "gomodUpdateImportPaths"],
+  packageRules: [
+    {
+      matchManagers: ["mise"],
+      minimumReleaseAge: "12 hours",
+    },
+    {
+      description: "Go Toolchain Group",
+      matchManagers: ["gomod", "mise"],
+      matchDepNames: ["go", "golang"],
+      matchFileNames: ["go.mod", ".mise/config.toml"],
+      minimumGroupSize: 2,
+    },
+    {
+      matchManagers: ["gomod"],
+      matchPackageNames: ["github.com/prometheus/**"],
+      groupName: "Prometheus Group",
+      groupSlug: "prometheus",
+      groupSingleUpdates: true,
+    },
+  ],
+}
