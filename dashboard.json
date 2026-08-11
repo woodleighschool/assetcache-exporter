@@ -887,7 +887,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(assetcache_interval_served_bytes{instance=~\"$instance\"} / on(instance) assetcache_metrics_interval_seconds{instance=~\"$instance\"}) and on(instance) (time() - assetcache_metrics_last_timestamp_seconds{instance=~\"$instance\"} <= 2 * assetcache_metrics_interval_seconds{instance=~\"$instance\"})",
+          "expr": "(assetcache_interval_served_bytes{instance=~\"$instance\"} / on(job, instance) group_left assetcache_metrics_interval_seconds{instance=~\"$instance\"}) and on(job, instance) (time() - assetcache_metrics_last_timestamp_seconds{instance=~\"$instance\"} <= 2 * assetcache_metrics_interval_seconds{instance=~\"$instance\"})",
           "instant": false,
           "legendFormat": "{{instance}} · {{source}}",
           "range": true,
@@ -982,7 +982,7 @@
             "uid": "${DS_PROMETHEUS}"
           },
           "editorMode": "code",
-          "expr": "(assetcache_interval_requests{instance=~\"$instance\"} / on(instance) assetcache_metrics_interval_seconds{instance=~\"$instance\"}) and on(instance) (time() - assetcache_metrics_last_timestamp_seconds{instance=~\"$instance\"} <= 2 * assetcache_metrics_interval_seconds{instance=~\"$instance\"})",
+          "expr": "(assetcache_interval_requests{instance=~\"$instance\"} / on(job, instance) group_left assetcache_metrics_interval_seconds{instance=~\"$instance\"}) and on(job, instance) (time() - assetcache_metrics_last_timestamp_seconds{instance=~\"$instance\"} <= 2 * assetcache_metrics_interval_seconds{instance=~\"$instance\"})",
           "instant": false,
           "legendFormat": "{{instance}} · {{source}}",
           "range": true,
