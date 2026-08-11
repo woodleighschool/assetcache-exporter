@@ -58,7 +58,7 @@ Interval observations are gauges, not counters. Apple omits zero rows while the 
 
 ## Dashboard
 
-A Grafana dashboard is available at [`dashboard.yaml`](dashboard.yaml).
+A Grafana dashboard is available at [`dashboard.json`](dashboard.json).
 
 ## Data sources
 

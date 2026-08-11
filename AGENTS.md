@@ -15,7 +15,7 @@ Repository guidance for assetcache-exporter.
 - Apple status and metrics database collection: `internal/assetcache`
 - HTTP surface: `internal/exporter`
 - LaunchDaemon resources: `packaging`
-- Grafana dashboard: `dashboard.yaml`
+- Grafana dashboard: `dashboard.json`
 
 Keep the two Apple sources independently fallible and read `Metrics.db` strictly read-only.
 
