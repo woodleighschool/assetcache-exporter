@@ -1,16 +1,16 @@
 # assetcache-exporter
 
-`assetcache-exporter` is a small Prometheus exporter for Apple Content Caching. It runs on
-the cache Mac, reads current status from `AssetCacheManagerUtil`, reads Apple's local metrics
-database in SQLite read-only mode, and exposes both at `/metrics`.
+`assetcache-exporter` is a small Prometheus exporter for Apple Content Caching. It runs on the cache Mac, reads current status from `AssetCacheManagerUtil`, reads Apple's local metrics database in SQLite read-only mode, and exposes both at `/metrics`.
 
-The exporter does not change Content Caching settings, poll in the background, or keep its own
-state. A failure in either Apple data source is reported without suppressing metrics from the
-other source.
+The exporter does not change Content Caching settings, poll in the background, or keep its own state. A failure in either Apple data source is reported without suppressing metrics from the other source.
 
-## Run
+## Install
 
-Build and run it directly on a Content Cache Mac:
+Download the `.pkg` from the latest [release build](https://github.com/woodleighschool/assetcache-exporter/actions/workflows/release.yaml) and open it. The package installs and starts the exporter as a LaunchDaemon.
+
+The exporter listens on `:9200` and serves metrics at `/metrics`.
+
+## Run from source
 
 ```sh
 mise run build
@@ -54,51 +54,11 @@ The main metrics are:
 | `assetcache_metrics_db_up`                   | Whether `Metrics.db` was readable and compatible.           |
 | `assetcache_scrape_success`                  | Whether both sources succeeded.                             |
 
-Interval observations are gauges, not counters. Apple omits zero rows while the cache is idle,
-so an old `assetcache_metrics_last_timestamp_seconds` does not by itself mean collection has
-failed. Use `assetcache_metrics_db_up` to distinguish a readable idle database from a source
-failure.
+Interval observations are gauges, not counters. Apple omits zero rows while the cache is idle, so an old `assetcache_metrics_last_timestamp_seconds` does not by itself mean collection has failed. Use `assetcache_metrics_db_up` to distinguish a readable idle database from a source failure.
 
 ## Dashboard
 
-[`dashboard.yaml`](dashboard.yaml) is a ready-to-import Grafana dashboard. A Grafana Operator
-resource can load it directly from GitHub after this repository is published:
-
-```yaml
-apiVersion: grafana.integreatly.org/v1beta1
-kind: GrafanaDashboard
-metadata:
-    name: assetcache-exporter
-spec:
-    instanceSelector:
-        matchLabels:
-            dashboards: monitoring
-    datasources:
-        - datasourceName: prometheus
-          inputName: DS_PROMETHEUS
-    url: https://raw.githubusercontent.com/woodleighschool/assetcache-exporter/main/dashboard.yaml
-```
-
-## LaunchDaemon
-
-The supplied [`packaging/au.edu.vic.woodleigh.assetcache-exporter.plist`](packaging/au.edu.vic.woodleigh.assetcache-exporter.plist)
-runs the exporter at boot as Apple's built-in `_assetcache` user, not root. The binary expects to
-be installed at `/usr/local/bin/assetcache-exporter`.
-
-For manual testing:
-
-```sh
-sudo install -o root -g wheel -m 0755 assetcache-exporter /usr/local/bin/assetcache-exporter
-sudo install -o root -g wheel -m 0644 \
-  packaging/au.edu.vic.woodleigh.assetcache-exporter.plist \
-  /Library/LaunchDaemons/au.edu.vic.woodleigh.assetcache-exporter.plist
-sudo launchctl bootstrap system \
-  /Library/LaunchDaemons/au.edu.vic.woodleigh.assetcache-exporter.plist
-```
-
-Release archives currently contain an unsigned Apple Silicon binary plus the plist. Binary
-signing, notarisation, and the deployable `.pkg` are deliberately deferred until the package
-release path is added. Intel builds are intentionally unsupported.
+A Grafana dashboard is available at [`dashboard.yaml`](dashboard.yaml).
 
 ## Data sources
 
@@ -109,9 +69,7 @@ The exporter reads:
 /Library/Application Support/Apple/AssetCache/Metrics/Metrics.db
 ```
 
-The SQLite connection uses `mode=ro`. Apple documents `Metrics.db` as an implementation surface
-that may change between macOS releases; incompatible schemas set `assetcache_metrics_db_up` to
-zero while the HTTP server and status collection continue running.
+The SQLite connection uses `mode=ro`. Apple documents `Metrics.db` as an implementation surface that may change between macOS releases; incompatible schemas set `assetcache_metrics_db_up` to zero while the HTTP server and status collection continue running.
 
 ## Development
 

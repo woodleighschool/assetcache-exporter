@@ -34,8 +34,6 @@ archives:
     formats:
       - tar.gz
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
-    files:
-      - packaging/au.edu.vic.woodleigh.assetcache-exporter.plist
 
 checksum:
   name_template: "{{ .ProjectName }}_{{ .Version }}_checksums.txt"

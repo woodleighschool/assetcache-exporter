@@ -1,0 +1,4 @@
+#!/bin/sh
+
+/bin/launchctl bootout system/au.edu.vic.woodleigh.assetcache-exporter 2>/dev/null || true
+/bin/launchctl bootstrap system /Library/LaunchDaemons/au.edu.vic.woodleigh.assetcache-exporter.plist
