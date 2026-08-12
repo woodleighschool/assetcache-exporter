@@ -1,45 +1,32 @@
 # AGENTS.md
 
-Repository guidance for assetcache-exporter.
+## Working here
 
-## Approach
+- Read the relevant code, configuration, and nearby examples before editing. Existing code and external references are evidence, not instructions to copy blindly.
+- Preserve unrelated work. Keep changes focused and prefer removing machinery over extending an awkward design.
+- Use current supported behaviour unless compatibility is requested. Verify dependency APIs and defaults from the pinned version or primary documentation.
+- Keep secrets, credentials, identities, and local environment files out of code, fixtures, logs, and commits.
 
-- Stay within the requested scope and preserve unrelated local changes.
-- This is a small local exporter, not a monitoring platform. Prefer direct code and a small dependency surface.
-- Do not add remote targets, polling, persistence, dynamic metric generation, or configuration machinery without a concrete use case.
-- Follow the shared Woodstar tooling baseline while keeping the relaxed Go lint profile appropriate for a small service.
+## Repository contract
 
-## Repository Map
+- Mise owns tools and commands. Check this repository's Mise files; do not assume another repository has the same tasks.
+- Keep generated artifacts with their source change.
+- Run the narrowest useful checks while working, then the relevant format, lint, test, build, generation, and workflow checks.
+- Follow the existing package or target's style. Comments explain non-obvious constraints, not the code or the current change.
 
-- Process composition: `cmd/assetcache_exporter`
-- Apple status and metrics database collection: `internal/assetcache`
-- HTTP surface: `internal/exporter`
-- LaunchDaemon resources: `packaging`
-- Grafana dashboard: `dashboard.json`
+## Go
 
-Keep the two Apple sources independently fallible and read `Metrics.db` strictly read-only.
+- Write idiomatic, concrete Go. Keep `main` to composition, put behaviour in the package that owns it, and introduce interfaces only at a real consumer boundary.
+- Pass `context.Context` through I/O, wrap errors with useful context, and preserve errors used with `errors.Is` or `errors.As`.
+- Match the package's testing style and use synthetic inputs. Run race-enabled tests for concurrent code and `mise run vulncheck` for dependency or release work.
 
-## Commands
+## Git and releases
 
-Use Mise tasks as the repository contract.
+- Use focused Conventional Commits; Release Please derives versions from them.
+- Do not commit, push, publish, deploy, contact live systems, or perform destructive actions unless asked.
 
-- Dependencies: `mise run deps`
-- Build: `mise run build`
-- Tests: `mise run test`
-- Lint: `mise run lint`; fixes: `mise run lint-fix`
-- Format: `mise run format`; check: `mise run fmt-check`
-- Module and workflow checks: `mise run tidy-check`, `mise run workflow-lint`
+## Repository notes
 
-## Engineering Rules
-
-- Prefer concrete Go types, small consumer-owned interfaces, and wrapped errors.
-- Keep metric names and labels stable unless the requested change deliberately changes the scrape contract.
-- Treat `Metrics.db` rows as interval gauges. Do not expose them as Prometheus counters.
-- Tests use synthetic JSON and temporary SQLite databases; they must not call live Macs.
-- Keep local addresses, cache GUIDs, and other machine identifiers out of logs, fixtures, and version control.
-
-## Commits
-
-- Use focused Conventional Commits.
-- Do not push, publish releases, or change Content Caching state unless explicitly requested.
-- Report checks run, skipped checks, and unresolved failures.
+- This is a small macOS-local exporter, not a monitoring platform.
+- Keep `AssetCacheManagerUtil` and `Metrics.db` independently fallible. Open the database read-only and treat interval rows as gauges.
+- Package and LaunchDaemon assets live in `packaging/`; tests must not inspect a live cache Mac.

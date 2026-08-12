@@ -1,32 +1,21 @@
 # assetcache-exporter
 
-`assetcache-exporter` is a small Prometheus exporter for Apple Content Caching. It runs on the cache Mac, reads current status from `AssetCacheManagerUtil`, reads Apple's local metrics database in SQLite read-only mode, and exposes both at `/metrics`.
+Prometheus exporter for Apple Content Caching. It reads current status from `AssetCacheManagerUtil` and Apple's local metrics database, then serves both at `/metrics`.
 
-The exporter does not change Content Caching settings, poll in the background, or keep its own state. A failure in either Apple data source is reported without suppressing metrics from the other source.
+It does not change Content Caching, poll in the background, or keep its own state. The two Apple sources are read independently, so one can fail without hiding metrics from the other.
 
-## Install
+## 🚀 Usage
 
-Download the `.pkg` from the latest [release build](https://github.com/woodleighschool/assetcache-exporter/actions/workflows/release.yaml) and open it. The package installs and starts the exporter as a LaunchDaemon.
+Download the macOS `.pkg` attached to the [latest release](https://github.com/woodleighschool/assetcache-exporter/releases/latest) and open it. The package installs a LaunchDaemon, listens on `:9200`, and runs as the local `_assetcache` account.
 
-The exporter listens on `:9200` and serves metrics at `/metrics`.
+To run from source:
 
-## Run from source
-
-```sh
+```bash
 mise run build
 ./assetcache-exporter
 ```
 
-It listens on `:9200` by default. Common flags are:
-
-```text
---web.listen-address=:9200
---web.telemetry-path=/metrics
---collector.timeout=5s
---version
-```
-
-Prometheus can scrape the Mac with a normal static target or `ScrapeConfig`:
+Prometheus can scrape the Mac directly:
 
 ```yaml
 scrape_configs:
@@ -35,47 +24,41 @@ scrape_configs:
           - targets: [cache.example.edu:9200]
 ```
 
-## Metrics
+A Grafana dashboard is available in [`dashboard.json`](dashboard.json).
 
-The main metrics are:
+## ⚙️ Configuration
 
-| Metric                                       | Meaning                                                     |
-| -------------------------------------------- | ----------------------------------------------------------- |
-| `assetcache_active`                          | Whether Content Caching is currently active.                |
-| `assetcache_cache_used_bytes`                | Logical bytes currently held in the cache.                  |
-| `assetcache_cache_limit_bytes`               | Configured cache limit.                                     |
-| `assetcache_cache_pressure_ratio`            | Maximum cache pressure during the last hour.                |
-| `assetcache_served_bytes_total{destination}` | Cumulative bytes returned to clients, children, and peers.  |
-| `assetcache_stored_bytes_total{source}`      | Cumulative bytes stored from origin, parents, and peers.    |
-| `assetcache_interval_served_bytes{source}`   | Bytes served in the latest recorded Apple metrics interval. |
-| `assetcache_interval_requests{source}`       | Requests received in the latest recorded interval.          |
-| `assetcache_metrics_last_timestamp_seconds`  | Timestamp of that latest interval.                          |
-| `assetcache_status_up`                       | Whether `AssetCacheManagerUtil` was readable.               |
-| `assetcache_metrics_db_up`                   | Whether `Metrics.db` was readable and compatible.           |
-| `assetcache_scrape_success`                  | Whether both sources succeeded.                             |
+| Flag                   | Default    | Purpose                            |
+| ---------------------- | ---------- | ---------------------------------- |
+| `--web.listen-address` | `:9200`    | HTTP listen address                |
+| `--web.telemetry-path` | `/metrics` | Metrics path                       |
+| `--collector.timeout`  | `5s`       | Timeout for each Apple data source |
+| `--version`            |            | Print build information            |
 
-Interval observations are gauges, not counters. Apple omits zero rows while the cache is idle, so an old `assetcache_metrics_last_timestamp_seconds` does not by itself mean collection has failed. Use `assetcache_metrics_db_up` to distinguish a readable idle database from a source failure.
+## 📈 Metrics
 
-## Dashboard
+| Metric                                       | Meaning                                                   |
+| -------------------------------------------- | --------------------------------------------------------- |
+| `assetcache_active`                          | Whether Content Caching is active                         |
+| `assetcache_cache_used_bytes`                | Logical bytes held in the cache                           |
+| `assetcache_cache_limit_bytes`               | Configured cache limit                                    |
+| `assetcache_cache_pressure_ratio`            | Maximum cache pressure during the last hour               |
+| `assetcache_served_bytes_total{destination}` | Cumulative bytes returned to clients, children, and peers |
+| `assetcache_stored_bytes_total{source}`      | Cumulative bytes stored from origin, parents, and peers   |
+| `assetcache_interval_served_bytes{source}`   | Bytes served in the latest Apple metrics interval         |
+| `assetcache_interval_requests{source}`       | Requests received in the latest interval                  |
+| `assetcache_metrics_last_timestamp_seconds`  | Timestamp of the latest interval                          |
+| `assetcache_status_up`                       | Whether `AssetCacheManagerUtil` was readable              |
+| `assetcache_metrics_db_up`                   | Whether `Metrics.db` was readable and compatible          |
+| `assetcache_scrape_success`                  | Whether both sources succeeded                            |
 
-A Grafana dashboard is available at [`dashboard.json`](dashboard.json).
+Interval observations are gauges. Apple can omit zero rows while idle, so an old interval timestamp does not itself mean collection failed.
 
-## Data sources
+The exporter opens `/Library/Application Support/Apple/AssetCache/Metrics/Metrics.db` read-only. An incompatible schema sets `assetcache_metrics_db_up` to zero while the HTTP server and status collection continue.
 
-The exporter reads:
+## 🧑‍💻 Development
 
-```text
-/usr/bin/AssetCacheManagerUtil -j status
-/Library/Application Support/Apple/AssetCache/Metrics/Metrics.db
-```
-
-The SQLite connection uses `mode=ro`. Apple documents `Metrics.db` as an implementation surface that may change between macOS releases; incompatible schemas set `assetcache_metrics_db_up` to zero while the HTTP server and status collection continue running.
-
-## Development
-
-Use the Mise tasks as the repository interface:
-
-```sh
+```bash
 mise run deps
 mise run build
 mise run test
@@ -83,3 +66,7 @@ mise run lint
 mise run fmt-check
 mise run workflow-lint
 ```
+
+## 📄 License
+
+Licensed under the [Apache License 2.0](LICENSE).
