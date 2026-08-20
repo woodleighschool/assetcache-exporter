@@ -10,7 +10,7 @@ before:
 builds:
   - id: assetcache-exporter
     main: ./cmd/assetcache_exporter
-    binary: assetcache-exporter
+    binary: assetcache_exporter
     env:
       - CGO_ENABLED=0
     goos:

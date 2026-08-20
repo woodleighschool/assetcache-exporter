@@ -19,7 +19,7 @@ run = "go mod download"
 
 [tasks.build]
 description = "Build application"
-run = "CGO_ENABLED=0 go build -o assetcache-exporter ./cmd/assetcache_exporter"
+run = "CGO_ENABLED=0 go build -o assetcache_exporter ./cmd/assetcache_exporter"
 
 [tasks.tidy]
 description = "Tidy the Go module"
@@ -59,7 +59,7 @@ run = ["actionlint", "zizmor --offline --no-ignores .github/workflows"]
 
 [tasks.clean]
 description = "Remove local build outputs"
-run = "rm -f assetcache-exporter coverage.out && rm -rf dist"
+run = "rm -f assetcache_exporter coverage.out && rm -rf dist"
 
 [hooks]
 postinstall = "lefthook install"

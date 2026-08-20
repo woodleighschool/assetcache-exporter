@@ -6,7 +6,7 @@
 *.out
 
 # Build and tool outputs
-/assetcache-exporter
+/assetcache_exporter
 /bin/
 /dist/
 /tmp/

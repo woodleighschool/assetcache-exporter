@@ -6,7 +6,7 @@
   <string>au.edu.vic.woodleigh.assetcache-exporter</string>
   <key>ProgramArguments</key>
   <array>
-    <string>/usr/local/bin/assetcache-exporter</string>
+    <string>/usr/local/bin/assetcache_exporter</string>
     <string>--web.listen-address=:9200</string>
   </array>
   <key>UserName</key>

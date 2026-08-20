@@ -12,16 +12,16 @@ To run from source:
 
 ```bash
 mise run build
-./assetcache-exporter
+./assetcache_exporter
 ```
 
 Prometheus can scrape the Mac directly:
 
 ```yaml
 scrape_configs:
-    - job_name: assetcache
-      static_configs:
-          - targets: [cache.example.edu:9200]
+  - job_name: assetcache
+    static_configs:
+      - targets: [cache.example.edu:9200]
 ```
 
 A Grafana dashboard is available in [`dashboard.json`](dashboard.json).
