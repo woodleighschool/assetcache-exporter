@@ -1,4 +1,4 @@
-// Package exporter provides the assetcache-exporter HTTP surface.
+// Package exporter serves metrics over HTTP.
 package exporter
 
 import (

@@ -2,7 +2,7 @@
 
 Prometheus exporter for Apple Content Caching. It reads current status from `AssetCacheManagerUtil` and Apple's local metrics database, then serves both at `/metrics`.
 
-It does not change Content Caching, poll in the background, or keep its own state. The two Apple sources are read independently, so one can fail without hiding metrics from the other.
+Each scrape reads the two Apple sources independently, so one can fail without hiding metrics from the other.
 
 ## 🚀 Usage
 
