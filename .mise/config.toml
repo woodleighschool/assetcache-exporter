@@ -19,7 +19,7 @@ run = "go mod download"
 
 [tasks.build]
 description = "Build application"
-run = "CGO_ENABLED=0 go build -o assetcache_exporter ./cmd/assetcache_exporter"
+run = "CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o assetcache_exporter ./cmd/assetcache_exporter"
 
 [tasks.tidy]
 description = "Tidy the Go module"
