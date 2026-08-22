@@ -38,6 +38,9 @@ jobs:
           experimental: true
           install_args: --locked go
 
+      - name: Show Xcode version
+        run: xcodebuild -version
+
       - name: Import Developer ID Application certificate
         id: import-application-cert
         uses: apple-actions/import-codesign-certs@5142e029c445c10ffc7149d172e540235a065466 # v7
@@ -137,6 +140,14 @@ jobs:
 
           xcrun stapler staple "${PKG_PATH}"
           xcrun stapler validate "${PKG_PATH}"
+
+      - name: Verify package
+        run: |
+          VERSION="${RELEASE_TAG#v}"
+          PKG_PATH="${GITHUB_WORKSPACE}/dist/assetcache-exporter-${VERSION}-darwin-arm64.pkg"
+
+          pkgutil --check-signature "${PKG_PATH}"
+          spctl --assess --type install --verbose=2 "${PKG_PATH}"
 
       - name: Upload release asset
         env:
