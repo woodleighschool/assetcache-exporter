@@ -22,6 +22,8 @@ jobs:
       RELEASE_TAG: ${{ github.event.release.tag_name }}
       APP_SIGNING_IDENTITY: "Developer ID Application: Woodleigh School (SMLKBTR495)"
       PKG_SIGNING_IDENTITY: "Developer ID Installer: Woodleigh School (SMLKBTR495)"
+      APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
+      APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
       MISE_NO_HOOKS: "1"
 
     steps:
@@ -117,9 +119,7 @@ jobs:
 
       - name: Notarize package
         env:
-          APPLE_NOTARY_ISSUER_ID: ${{ secrets.APPLE_NOTARY_ISSUER_ID }}
-          APPLE_NOTARY_KEY_P8_BASE64: ${{ secrets.APPLE_NOTARY_KEY_P8_BASE64 }}
-          APPLE_NOTARY_KEY_ID: ${{ secrets.APPLE_NOTARY_KEY_ID }}
+          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
           set -euo pipefail
 
@@ -129,13 +129,13 @@ jobs:
 
           trap 'rm -f "${NOTARY_KEY_PATH}"' EXIT
 
-          printf '%s' "${APPLE_NOTARY_KEY_P8_BASE64}" | base64 -D > "${NOTARY_KEY_PATH}"
+          printf '%s' "${APPSTORE_API_PRIVATE_KEY}" > "${NOTARY_KEY_PATH}"
           chmod 600 "${NOTARY_KEY_PATH}"
 
           xcrun notarytool submit "${PKG_PATH}" \
             --key "${NOTARY_KEY_PATH}" \
-            --key-id "${APPLE_NOTARY_KEY_ID}" \
-            --issuer "${APPLE_NOTARY_ISSUER_ID}" \
+            --key-id "${APPSTORE_API_KEY_ID}" \
+            --issuer "${APPSTORE_ISSUER_ID}" \
             --wait
 
           xcrun stapler staple "${PKG_PATH}"
