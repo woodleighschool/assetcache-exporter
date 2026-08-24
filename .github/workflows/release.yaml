@@ -44,12 +44,10 @@ jobs:
           APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
         run: |
           set -euo pipefail
+          umask 077
 
-          APPSTORE_API_PRIVATE_KEY_PATH="${RUNNER_TEMP}/AuthKey.p8"
-
-          printf '%s' "${APPSTORE_API_PRIVATE_KEY}" > "${APPSTORE_API_PRIVATE_KEY_PATH}"
-          chmod 600 "${APPSTORE_API_PRIVATE_KEY_PATH}"
-          echo "APPSTORE_API_PRIVATE_KEY_PATH=${APPSTORE_API_PRIVATE_KEY_PATH}" >> "${GITHUB_ENV}"
+          printf '%s' "${APPSTORE_API_PRIVATE_KEY}" > "${RUNNER_TEMP}/AuthKey.p8"
+          echo "APPSTORE_API_PRIVATE_KEY_PATH=${RUNNER_TEMP}/AuthKey.p8" >> "${GITHUB_ENV}"
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
@@ -62,6 +60,10 @@ jobs:
           MACOS_SIGN_P12: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64 }}
           MACOS_SIGN_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
 
+      - name: Remove App Store Connect key
+        if: ${{ always() }}
+        run: rm -f "${APPSTORE_API_PRIVATE_KEY_PATH}"
+
       - name: Show Xcode version
         run: xcodebuild -version
 
@@ -72,6 +74,7 @@ jobs:
           p12-password: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
 
       - name: Build and sign package
+        id: package
         run: |
           set -euo pipefail
 
@@ -102,23 +105,15 @@ jobs:
             --sign "${PKG_SIGNING_IDENTITY}" \
             "${PKG_PATH}"
 
+          echo "path=${PKG_PATH}" >> "${GITHUB_OUTPUT}"
+
       - name: Notarize package
-        run: |
-          set -euo pipefail
-
-          VERSION="${RELEASE_TAG#v}"
-          PKG_PATH="${GITHUB_WORKSPACE}/dist/assetcache-exporter_${VERSION}_darwin_arm64.pkg"
-
-          trap 'rm -f "${APPSTORE_API_PRIVATE_KEY_PATH}"' EXIT
-
-          xcrun notarytool submit "${PKG_PATH}" \
-            --key "${APPSTORE_API_PRIVATE_KEY_PATH}" \
-            --key-id "${APPSTORE_API_KEY_ID}" \
-            --issuer "${APPSTORE_ISSUER_ID}" \
-            --wait
-
-          xcrun stapler staple "${PKG_PATH}"
-          xcrun stapler validate "${PKG_PATH}"
+        uses: woodleighschool/.github/actions/apple-notarize@a85ca6bcf210fe5e22e50da1d832f211c2b44605 # apple-notarize-v2.0.0
+        with:
+          product-path: ${{ steps.package.outputs.path }}
+          issuer-id: ${{ vars.APPSTORE_ISSUER_ID }}
+          api-key-id: ${{ vars.APPSTORE_API_KEY_ID }}
+          api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
       - name: Verify package
         run: |
