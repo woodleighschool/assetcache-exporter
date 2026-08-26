@@ -20,9 +20,8 @@ jobs:
     runs-on: macos-26
     env:
       RELEASE_TAG: ${{ github.event.release.tag_name }}
+      APP_SIGNING_IDENTITY: "Developer ID Application: Woodleigh School (SMLKBTR495)"
       PKG_SIGNING_IDENTITY: "Developer ID Installer: Woodleigh School (SMLKBTR495)"
-      APPSTORE_API_KEY_ID: ${{ vars.APPSTORE_API_KEY_ID }}
-      APPSTORE_ISSUER_ID: ${{ vars.APPSTORE_ISSUER_ID }}
       MISE_NO_HOOKS: "1"
 
     steps:
@@ -39,73 +38,74 @@ jobs:
           experimental: true
           install_args: --locked go
 
-      - name: Prepare App Store Connect key
-        env:
-          APPSTORE_API_PRIVATE_KEY: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
+      - name: Resolve release version
+        id: release
         run: |
-          set -euo pipefail
-          umask 077
-
-          printf '%s' "${APPSTORE_API_PRIVATE_KEY}" > "${RUNNER_TEMP}/AuthKey.p8"
-          echo "APPSTORE_API_PRIVATE_KEY_PATH=${RUNNER_TEMP}/AuthKey.p8" >> "${GITHUB_ENV}"
+          VERSION="${RELEASE_TAG#v}"
+          test -n "${VERSION}"
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
 
       - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@f06c13b6b1a9625abc9e6e439d9c05a8f2190e94 # v7.2.3
         with:
           distribution: goreleaser
           version: "~> v2"
-          args: release --clean --parallelism=2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MACOS_SIGN_P12: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64 }}
-          MACOS_SIGN_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
-
-      - name: Remove App Store Connect key
-        if: ${{ always() }}
-        run: rm -f "${APPSTORE_API_PRIVATE_KEY_PATH}"
+          args: build --clean --single-target
 
       - name: Show Xcode version
         run: xcodebuild -version
 
-      - name: Import Developer ID Installer certificate
+      - name: Import Developer ID Application certificate
+        id: application-certificate
         uses: apple-actions/import-codesign-certs@5142e029c445c10ffc7149d172e540235a065466 # v7
         with:
-          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_ID_INSTALLER_P12_BASE64 }}
+          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64 }}
           p12-password: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
 
-      - name: Build and sign package
-        id: package
+      - name: Prepare package root
+        id: payload
         run: |
           set -euo pipefail
 
-          VERSION="${RELEASE_TAG#v}"
           BINARY_PATH="$(find "${GITHUB_WORKSPACE}/dist" -type f -name assetcache_exporter -print -quit)"
-          PAYLOAD="${RUNNER_TEMP}/payload"
-          PKG_PATH="${GITHUB_WORKSPACE}/dist/assetcache-exporter_${VERSION}_darwin_arm64.pkg"
+          PAYLOAD_ROOT="${RUNNER_TEMP}/package-root"
 
           test -n "${BINARY_PATH}"
+
+          codesign \
+            --force \
+            --options runtime \
+            --timestamp \
+            --sign "${APP_SIGNING_IDENTITY}" \
+            "${BINARY_PATH}"
+
           codesign --verify --strict --verbose=2 "${BINARY_PATH}"
 
-          mkdir -p "${PAYLOAD}/usr/local/bin" "${PAYLOAD}/Library/LaunchDaemons"
-
-          install -m 0755 \
+          mkdir -p "${PAYLOAD_ROOT}/usr/local/bin"
+          ditto --norsrc packaging/root "${PAYLOAD_ROOT}"
+          ditto --norsrc \
             "${BINARY_PATH}" \
-            "${PAYLOAD}/usr/local/bin/assetcache_exporter"
+            "${PAYLOAD_ROOT}/usr/local/bin/assetcache_exporter"
 
-          install -m 0644 \
-            packaging/au.edu.vic.woodleigh.assetcache-exporter.plist \
-            "${PAYLOAD}/Library/LaunchDaemons/au.edu.vic.woodleigh.assetcache-exporter.plist"
+          echo "root=${PAYLOAD_ROOT}" >> "${GITHUB_OUTPUT}"
 
-          pkgbuild \
-            --root "${PAYLOAD}" \
-            --scripts packaging/scripts \
-            --identifier au.edu.vic.woodleigh.assetcache-exporter \
-            --version "${VERSION}" \
-            --install-location / \
-            --sign "${PKG_SIGNING_IDENTITY}" \
-            "${PKG_PATH}"
+      - name: Import Developer ID Installer certificate
+        uses: apple-actions/import-codesign-certs@5142e029c445c10ffc7149d172e540235a065466 # v7
+        with:
+          create-keychain: false
+          keychain-password: ${{ steps.application-certificate.outputs.keychain-password }}
+          p12-file-base64: ${{ secrets.APPLE_DEVELOPER_ID_INSTALLER_P12_BASE64 }}
+          p12-password: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
 
-          echo "path=${PKG_PATH}" >> "${GITHUB_OUTPUT}"
+      - name: Build package
+        id: package
+        uses: woodleighschool/.github/actions/apple-pkg@583bc37748899a9154880b1c538b15cf46b5b05d # apple-pkg-v1.0.0
+        with:
+          payload-root: ${{ steps.payload.outputs.root }}
+          identifier: au.edu.vic.woodleigh.assetcache-exporter
+          version: ${{ steps.release.outputs.version }}
+          signing-identity: ${{ env.PKG_SIGNING_IDENTITY }}
+          output: dist/assetcache-exporter-${{ steps.release.outputs.version }}.pkg
 
       - name: Notarize package
         uses: woodleighschool/.github/actions/apple-notarize@a85ca6bcf210fe5e22e50da1d832f211c2b44605 # apple-notarize-v2.0.0
@@ -116,19 +116,18 @@ jobs:
           api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}
 
       - name: Verify package
+        env:
+          PKG_PATH: ${{ steps.package.outputs.path }}
         run: |
-          VERSION="${RELEASE_TAG#v}"
-          PKG_PATH="${GITHUB_WORKSPACE}/dist/assetcache-exporter_${VERSION}_darwin_arm64.pkg"
-
           pkgutil --check-signature "${PKG_PATH}"
           spctl --assess --type install --verbose=2 "${PKG_PATH}"
 
       - name: Upload release asset
         env:
           GH_TOKEN: ${{ github.token }}
+          PKG_PATH: ${{ steps.package.outputs.path }}
         run: |
-          VERSION="${RELEASE_TAG#v}"
           gh release upload \
             "${RELEASE_TAG}" \
-            "dist/assetcache-exporter_${VERSION}_darwin_arm64.pkg" \
+            "${PKG_PATH}" \
             --clobber
