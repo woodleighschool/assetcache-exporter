@@ -1,45 +1,39 @@
 package main
 
 import (
-	"log/slog"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/alecthomas/kingpin/v2"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/collectors"
 	versioncollector "github.com/prometheus/client_golang/prometheus/collectors/version"
-	"github.com/prometheus/common/promslog"
-	"github.com/prometheus/common/promslog/flag"
-	"github.com/prometheus/common/version"
-	"github.com/prometheus/exporter-toolkit/web"
-	"github.com/prometheus/exporter-toolkit/web/kingpinflag"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/prometheus/exporter-toolkit/bootstrap"
 
 	"github.com/woodleighschool/assetcache-exporter/internal/assetcache"
-	"github.com/woodleighschool/assetcache-exporter/internal/exporter"
 )
 
-var (
-	metricsPath  = kingpin.Flag("web.telemetry-path", "Path under which to expose exporter metrics.").Default("/metrics").String()
-	timeout      = kingpin.Flag("collector.timeout", "Maximum time allowed for each local data source.").Default("5s").Duration()
-	toolkitFlags = kingpinflag.AddFlags(kingpin.CommandLine, ":9200")
-)
+var timeout = kingpin.Flag("collector.timeout", "Maximum time allowed for each local data source.").Default("5s").Duration()
 
 func main() {
-	os.Exit(run())
+	runner := bootstrap.New(bootstrap.Config{
+		App:                   kingpin.CommandLine,
+		Name:                  "assetcache_exporter",
+		Description:           "Prometheus exporter for Apple Content Caching",
+		DefaultAddress:        ":9200",
+		ReadHeaderTimeout:     5 * time.Second,
+		MetricsHandlerFactory: newMetricsHandler,
+	})
+	if err := runner.Run(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
 
-func run() int {
-	promslogConfig := &promslog.Config{}
-	flag.AddFlags(kingpin.CommandLine, promslogConfig)
-	kingpin.Version(version.Print("assetcache_exporter"))
-	kingpin.HelpFlag.Short('h')
-	kingpin.Parse()
-
-	logger := promslog.New(promslogConfig)
-	logger.Info("Starting assetcache_exporter", "version", version.Info())
-	logger.Info("Build context", "build_context", version.BuildContext())
-
+func newMetricsHandler(b *bootstrap.Bootstrap) (http.Handler, error) {
 	registry := prometheus.NewRegistry()
 	registry.MustRegister(
 		versioncollector.NewCollector("assetcache_exporter"),
@@ -47,34 +41,21 @@ func run() int {
 			assetcache.NewStatusSource(),
 			assetcache.NewMetricsSource(),
 			*timeout,
-			logger,
+			b.Logger,
 		),
 	)
-
-	mux := http.NewServeMux()
-	server := exporter.Server{
-		Gatherer:    registry,
-		MetricsPath: *metricsPath,
-	}
-	if err := server.Register(mux); err != nil {
-		logger.Error("error creating HTTP handlers", "err", err)
-		return 1
+	if !b.DisableExporterMetrics {
+		registry.MustRegister(
+			collectors.NewGoCollector(),
+			collectors.NewProcessCollector(collectors.ProcessCollectorOpts{}),
+		)
 	}
 
-	httpServer := &http.Server{
-		Handler:           logRequests(mux, logger),
-		ReadHeaderTimeout: 5 * time.Second,
-	}
-	if err := web.ListenAndServe(httpServer, toolkitFlags, logger); err != nil {
-		logger.Error("error running HTTP server", "err", err)
-		return 1
-	}
-	return 0
-}
-
-func logRequests(next http.Handler, logger *slog.Logger) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		logger.DebugContext(r.Context(), "request", "method", r.Method, "path", r.URL.Path)
-		next.ServeHTTP(w, r)
+	handler := promhttp.HandlerFor(registry, promhttp.HandlerOpts{
+		MaxRequestsInFlight: b.MaxRequests,
 	})
+	if !b.DisableExporterMetrics {
+		handler = promhttp.InstrumentMetricHandler(registry, handler)
+	}
+	return handler, nil
 }
