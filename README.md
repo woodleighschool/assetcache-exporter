@@ -1,19 +1,17 @@
 # assetcache-exporter
 
+[![Release](https://img.shields.io/github/v/release/woodleighschool/assetcache-exporter?display_name=tag&sort=semver)](https://github.com/woodleighschool/assetcache-exporter/releases/latest)
+[![CI](https://github.com/woodleighschool/assetcache-exporter/actions/workflows/ci.yaml/badge.svg?branch=main)](https://github.com/woodleighschool/assetcache-exporter/actions/workflows/ci.yaml)
+[![Go](https://img.shields.io/github/go-mod/go-version/woodleighschool/assetcache-exporter?logo=go)](https://github.com/woodleighschool/assetcache-exporter/blob/main/go.mod)
+[![License](https://img.shields.io/github/license/woodleighschool/assetcache-exporter)](https://github.com/woodleighschool/assetcache-exporter/blob/main/LICENSE)
+
 Prometheus exporter for Apple Content Caching. It reads current status from `AssetCacheManagerUtil` and Apple's local metrics database, then serves both at `/metrics`.
 
 Each scrape reads the two Apple sources independently, so one can fail without hiding metrics from the other.
 
 ## 🚀 Usage
 
-Download the macOS `.pkg` attached to the [latest release](https://github.com/woodleighschool/assetcache-exporter/releases/latest) and open it. The package installs a LaunchDaemon, listens on `:9200`, and runs as the local `_assetcache` account.
-
-To run from source:
-
-```bash
-mise run build
-./assetcache_exporter
-```
+Download the macOS `.pkg` from the [latest release](https://github.com/woodleighschool/assetcache-exporter/releases/latest). It installs `assetcache_exporter` in `/usr/local/bin` and a system LaunchDaemon in `/Library/LaunchDaemons`. The service runs as the macOS `_assetcache` account on `:9200`; installation loads it immediately, and launchd keeps it running.
 
 Prometheus can scrape the Mac directly:
 
@@ -57,6 +55,8 @@ Interval observations are gauges. Apple can omit zero rows while idle, so an old
 The exporter opens `/Library/Application Support/Apple/AssetCache/Metrics/Metrics.db` read-only. An incompatible schema sets `assetcache_metrics_db_up` to zero while the HTTP server and status collection continue.
 
 ## 🧑‍💻 Development
+
+`mise run build` writes `./assetcache_exporter`. Running that binary directly does not install or load the LaunchDaemon.
 
 ```bash
 mise run deps
