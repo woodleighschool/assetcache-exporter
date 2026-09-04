@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.2.1](https://github.com/woodleighschool/assetcache-exporter/compare/1.2.0...1.2.1) (2026-09-04)
+
+
+### Continuous Integration
+
+* **github-action:** update action jdx/mise-action (v4.2.5 → v4.3.0) ([#16](https://github.com/woodleighschool/assetcache-exporter/issues/16)) ([8ca703b](https://github.com/woodleighschool/assetcache-exporter/commit/8ca703b3697eb13e037e649733bf237744a62cf2))
+
+
+### Miscellaneous Chores
+
+* fresh mise lock ([f7b420f](https://github.com/woodleighschool/assetcache-exporter/commit/f7b420f3d1f1fa9870f6c52edc3c3bb62047a86d))
+* **mise:** update tool lefthook (2.1.11 → 2.1.12) ([#20](https://github.com/woodleighschool/assetcache-exporter/issues/20)) ([dc8743e](https://github.com/woodleighschool/assetcache-exporter/commit/dc8743ecaf06b58486d07b5d1bdb6c2e2cbd1c42))
+* **mise:** update tool oxfmt (0.65.0 → 0.66.0) ([#23](https://github.com/woodleighschool/assetcache-exporter/issues/23)) ([010c3dd](https://github.com/woodleighschool/assetcache-exporter/commit/010c3dd2ec12ff62f4716f5d2342f4720f2ccffe))
+* **mise:** update tool zizmor (1.29.0 → 1.30.0) ([#22](https://github.com/woodleighschool/assetcache-exporter/issues/22)) ([d5123a2](https://github.com/woodleighschool/assetcache-exporter/commit/d5123a2b80c1c736373805466494bcff728ef9ef))
+
 ## [1.2.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.1.0...1.2.0) (2026-08-27)
 
 
