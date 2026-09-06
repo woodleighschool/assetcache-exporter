@@ -64,7 +64,6 @@ mise run build
 mise run test
 mise run lint
 mise run fmt-check
-mise run workflow-lint
 ```
 
 ## 📄 License
