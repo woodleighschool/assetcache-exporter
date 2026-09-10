@@ -1,5 +1,34 @@
 # Changelog
 
+## [1.3.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.2.0...1.3.0) (2026-09-10)
+
+
+### Features
+
+* **go:** update module modernc.org/sqlite (v1.57.0 → v1.58.0) ([#21](https://github.com/woodleighschool/assetcache-exporter/issues/21)) ([22b42c5](https://github.com/woodleighschool/assetcache-exporter/commit/22b42c5284d101fbf9ed5e315b2ad9ec01e78706))
+
+
+### Bug Fixes
+
+* **go:** update prometheus group ([#19](https://github.com/woodleighschool/assetcache-exporter/issues/19)) ([4217591](https://github.com/woodleighschool/assetcache-exporter/commit/4217591775960d0dde74b8a6d5a76aa950b4e54f))
+
+
+### Continuous Integration
+
+* **github-action:** update action jdx/mise-action (v4.2.5 → v4.3.0) ([#16](https://github.com/woodleighschool/assetcache-exporter/issues/16)) ([8ca703b](https://github.com/woodleighschool/assetcache-exporter/commit/8ca703b3697eb13e037e649733bf237744a62cf2))
+* skip release metadata checks and name Go jobs ([6a33987](https://github.com/woodleighschool/assetcache-exporter/commit/6a33987cf539bbefd643ee8d86d9225517e759fb))
+
+
+### Miscellaneous Chores
+
+* fresh mise lock ([f7b420f](https://github.com/woodleighschool/assetcache-exporter/commit/f7b420f3d1f1fa9870f6c52edc3c3bb62047a86d))
+* **mise:** update go toolchain ([#18](https://github.com/woodleighschool/assetcache-exporter/issues/18)) ([cd81e22](https://github.com/woodleighschool/assetcache-exporter/commit/cd81e2260992c8d9341a817ec4dacb625dd25e5f))
+* **mise:** update tool go:golang.org/x/vuln/cmd/govulncheck (1.7.0 → v1.8.0) ([#24](https://github.com/woodleighschool/assetcache-exporter/issues/24)) ([62b5799](https://github.com/woodleighschool/assetcache-exporter/commit/62b5799f58148c2f9075637699cb46b8f43c414e))
+* **mise:** update tool lefthook (2.1.11 → 2.1.12) ([#20](https://github.com/woodleighschool/assetcache-exporter/issues/20)) ([dc8743e](https://github.com/woodleighschool/assetcache-exporter/commit/dc8743ecaf06b58486d07b5d1bdb6c2e2cbd1c42))
+* **mise:** update tool oxfmt (0.65.0 → 0.66.0) ([#23](https://github.com/woodleighschool/assetcache-exporter/issues/23)) ([010c3dd](https://github.com/woodleighschool/assetcache-exporter/commit/010c3dd2ec12ff62f4716f5d2342f4720f2ccffe))
+* **mise:** update tool zizmor (1.29.0 → 1.30.0) ([#22](https://github.com/woodleighschool/assetcache-exporter/issues/22)) ([d5123a2](https://github.com/woodleighschool/assetcache-exporter/commit/d5123a2b80c1c736373805466494bcff728ef9ef))
+* remove redundant workflow lint task ([3d28ba0](https://github.com/woodleighschool/assetcache-exporter/commit/3d28ba06dcbefaf91fa664a59573e3ad0aaa7c25))
+
 ## [1.2.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.1.0...1.2.0) (2026-08-27)
 
 
