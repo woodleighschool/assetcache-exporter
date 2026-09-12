@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1](https://github.com/woodleighschool/assetcache-exporter/compare/1.3.0...1.3.1) (2026-09-12)
+
+
+### Miscellaneous Chores
+
+* **mise:** update tool oxfmt (0.66.0 → 0.67.0) ([#25](https://github.com/woodleighschool/assetcache-exporter/issues/25)) ([6d209f0](https://github.com/woodleighschool/assetcache-exporter/commit/6d209f09962ed8af141d0f438c6b0bedd63de875))
+* **mise:** update tool zizmor (1.30.0 → 1.30.1) ([#27](https://github.com/woodleighschool/assetcache-exporter/issues/27)) ([a660854](https://github.com/woodleighschool/assetcache-exporter/commit/a660854008b4ff57a17c9d4317a250890301acf9))
+
 ## [1.3.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.2.0...1.3.0) (2026-09-10)
 
 
