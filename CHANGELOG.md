@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.4.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.3.0...1.4.0) (2026-09-18)
+
+
+### Features
+
+* **go:** update module modernc.org/sqlite (v1.58.0 → v1.59.0) ([#28](https://github.com/woodleighschool/assetcache-exporter/issues/28)) ([4faef39](https://github.com/woodleighschool/assetcache-exporter/commit/4faef3940f7c5a031f533ce82b19de2d79e6e7ea))
+
+
+### Miscellaneous Chores
+
+* **mise:** update tool lefthook (2.1.12 → 2.1.14) ([#29](https://github.com/woodleighschool/assetcache-exporter/issues/29)) ([34d55b1](https://github.com/woodleighschool/assetcache-exporter/commit/34d55b1a775c77314132c101a682fc1e6389adec))
+* **mise:** update tool oxfmt (0.66.0 → 0.67.0) ([#25](https://github.com/woodleighschool/assetcache-exporter/issues/25)) ([6d209f0](https://github.com/woodleighschool/assetcache-exporter/commit/6d209f09962ed8af141d0f438c6b0bedd63de875))
+* **mise:** update tool oxfmt (0.67.0 → 0.68.0) ([#30](https://github.com/woodleighschool/assetcache-exporter/issues/30)) ([1cce5cf](https://github.com/woodleighschool/assetcache-exporter/commit/1cce5cfb129c185d0f79bf7117da6bfc7a70533f))
+* **mise:** update tool zizmor (1.30.0 → 1.30.1) ([#27](https://github.com/woodleighschool/assetcache-exporter/issues/27)) ([a660854](https://github.com/woodleighschool/assetcache-exporter/commit/a660854008b4ff57a17c9d4317a250890301acf9))
+
 ## [1.3.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.2.0...1.3.0) (2026-09-10)
 
 
