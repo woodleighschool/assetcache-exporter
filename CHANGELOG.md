@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.4.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.3.0...1.4.0) (2026-09-24)
+
+
+### Features
+
+* **go:** update module modernc.org/sqlite (v1.58.0 → v1.59.0) ([#28](https://github.com/woodleighschool/assetcache-exporter/issues/28)) ([4faef39](https://github.com/woodleighschool/assetcache-exporter/commit/4faef3940f7c5a031f533ce82b19de2d79e6e7ea))
+* **go:** update prometheus group ([#35](https://github.com/woodleighschool/assetcache-exporter/issues/35)) ([b0c7abf](https://github.com/woodleighschool/assetcache-exporter/commit/b0c7abf687930c14eb4c22fd48933e7503ffcb93))
+
+
+### Miscellaneous Chores
+
+* **github-action:** Update action home-operations/.github/actions/workflow-lint (v1.0.3 → v1.0.4) ([#32](https://github.com/woodleighschool/assetcache-exporter/issues/32)) ([ff5a404](https://github.com/woodleighschool/assetcache-exporter/commit/ff5a404ab4e5cb070b19e26ecb4b3a6789026ed6))
+* **github-action:** update action ubuntu (24.04 → 26.04) ([#31](https://github.com/woodleighschool/assetcache-exporter/issues/31)) ([4b76b09](https://github.com/woodleighschool/assetcache-exporter/commit/4b76b09d329ad97c09c604102b52e3e619b9d336))
+* **mise:** update tool lefthook (2.1.12 → 2.1.14) ([#29](https://github.com/woodleighschool/assetcache-exporter/issues/29)) ([34d55b1](https://github.com/woodleighschool/assetcache-exporter/commit/34d55b1a775c77314132c101a682fc1e6389adec))
+* **mise:** update tool npm:@commitlint/cli (21.2.2 → 21.2.3) ([#33](https://github.com/woodleighschool/assetcache-exporter/issues/33)) ([b18ec0d](https://github.com/woodleighschool/assetcache-exporter/commit/b18ec0d367d2488774540958c98f33e7513bd763))
+* **mise:** update tool oxfmt (0.66.0 → 0.67.0) ([#25](https://github.com/woodleighschool/assetcache-exporter/issues/25)) ([6d209f0](https://github.com/woodleighschool/assetcache-exporter/commit/6d209f09962ed8af141d0f438c6b0bedd63de875))
+* **mise:** update tool oxfmt (0.67.0 → 0.68.0) ([#30](https://github.com/woodleighschool/assetcache-exporter/issues/30)) ([1cce5cf](https://github.com/woodleighschool/assetcache-exporter/commit/1cce5cfb129c185d0f79bf7117da6bfc7a70533f))
+* **mise:** update tool oxfmt (0.68.0 → 0.69.0) ([#34](https://github.com/woodleighschool/assetcache-exporter/issues/34)) ([06aad0e](https://github.com/woodleighschool/assetcache-exporter/commit/06aad0e12309953fe5dfd4e58c9b0121be9a75dc))
+* **mise:** update tool oxfmt (0.69.0 → 0.70.0) ([#36](https://github.com/woodleighschool/assetcache-exporter/issues/36)) ([782750f](https://github.com/woodleighschool/assetcache-exporter/commit/782750f01c0eed545be860af47f41db14d2f9ad7))
+* **mise:** update tool zizmor (1.30.0 → 1.30.1) ([#27](https://github.com/woodleighschool/assetcache-exporter/issues/27)) ([a660854](https://github.com/woodleighschool/assetcache-exporter/commit/a660854008b4ff57a17c9d4317a250890301acf9))
+
 ## [1.3.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.2.0...1.3.0) (2026-09-10)
 
 
