@@ -36,7 +36,7 @@ jobs:
         with:
           cache: false
           experimental: true
-          install_args: --locked go
+          install_args: --locked go go:github.com/google/go-licenses/v2
 
       - name: Resolve release version
         id: release
@@ -86,6 +86,11 @@ jobs:
           ditto --norsrc \
             "${BINARY_PATH}" \
             "${PAYLOAD_ROOT}/usr/local/bin/assetcache_exporter"
+
+          LICENSE_ROOT="${PAYLOAD_ROOT}/usr/local/share/assetcache-exporter"
+          ditto --norsrc LICENSE "${LICENSE_ROOT}/LICENSE"
+          ditto --norsrc third_party_licenses "${LICENSE_ROOT}/third_party_licenses"
+          ditto --norsrc "${GOROOT}/LICENSE" "${LICENSE_ROOT}/third_party_licenses/go/LICENSE"
 
           echo "root=${PAYLOAD_ROOT}" >> "${GITHUB_OUTPUT}"
 

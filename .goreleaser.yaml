@@ -6,6 +6,7 @@ project_name: assetcache-exporter
 before:
   hooks:
     - go mod tidy
+    - mise run notices
 
 builds:
   - id: assetcache_exporter
