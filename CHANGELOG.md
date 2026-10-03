@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.4.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.3.0...v1.4.0) (2026-10-03)
+
+
+### Features
+
+* **go:** update module modernc.org/sqlite (v1.58.0 → v1.59.0) ([#28](https://github.com/woodleighschool/assetcache-exporter/issues/28)) ([4faef39](https://github.com/woodleighschool/assetcache-exporter/commit/4faef3940f7c5a031f533ce82b19de2d79e6e7ea))
+* **go:** update module modernc.org/sqlite (v1.59.0 → v1.60.0) ([#38](https://github.com/woodleighschool/assetcache-exporter/issues/38)) ([6c1badd](https://github.com/woodleighschool/assetcache-exporter/commit/6c1badd7ffc1952549c1f8e74a80a187d2422af2))
+* **go:** update prometheus group ([#35](https://github.com/woodleighschool/assetcache-exporter/issues/35)) ([b0c7abf](https://github.com/woodleighschool/assetcache-exporter/commit/b0c7abf687930c14eb4c22fd48933e7503ffcb93))
+
+
+### Bug Fixes
+
+* **go:** update module modernc.org/sqlite (v1.60.0 → v1.60.1) ([#39](https://github.com/woodleighschool/assetcache-exporter/issues/39)) ([ff71ca2](https://github.com/woodleighschool/assetcache-exporter/commit/ff71ca263fd31bc649fa0d08b3cb2e69fcb3f226))
+
 ## [1.3.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.2.0...1.3.0) (2026-09-10)
 
 
