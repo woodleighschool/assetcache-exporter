@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.3.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.2.0...1.3.0) (2026-09-10)
+## [1.3.0](https://github.com/woodleighschool/assetcache-exporter/compare/v1.2.0...v1.3.0) (2026-09-10)
 
 
 ### Features
@@ -29,7 +29,7 @@
 * **mise:** update tool zizmor (1.29.0 → 1.30.0) ([#22](https://github.com/woodleighschool/assetcache-exporter/issues/22)) ([d5123a2](https://github.com/woodleighschool/assetcache-exporter/commit/d5123a2b80c1c736373805466494bcff728ef9ef))
 * remove redundant workflow lint task ([3d28ba0](https://github.com/woodleighschool/assetcache-exporter/commit/3d28ba06dcbefaf91fa664a59573e3ad0aaa7c25))
 
-## [1.2.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.1.0...1.2.0) (2026-08-27)
+## [1.2.0](https://github.com/woodleighschool/assetcache-exporter/compare/v1.1.0...v1.2.0) (2026-08-27)
 
 
 ### Features
@@ -78,7 +78,7 @@
 * **mise:** update tool oxfmt (0.64.0 → 0.65.0) ([#14](https://github.com/woodleighschool/assetcache-exporter/issues/14)) ([89ef3b6](https://github.com/woodleighschool/assetcache-exporter/commit/89ef3b63db1a0343a99abfcadf52efe7db8dfe57))
 * **release-please:** sync configuration ([9727afc](https://github.com/woodleighschool/assetcache-exporter/commit/9727afc1c93c0faad4e3222685af5e0bf39c3a53))
 
-## [1.1.0](https://github.com/woodleighschool/assetcache-exporter/compare/1.0.1...1.1.0) (2026-08-20)
+## [1.1.0](https://github.com/woodleighschool/assetcache-exporter/compare/v1.0.1...v1.1.0) (2026-08-20)
 
 
 ### Features
@@ -91,7 +91,7 @@
 * **deps:** update indirect dependencies ([a70f346](https://github.com/woodleighschool/assetcache-exporter/commit/a70f346874406dcdc217ba64d5be85345d6bf59c))
 * preserve interval source series ([1b1d5f9](https://github.com/woodleighschool/assetcache-exporter/commit/1b1d5f9f8f14a5e366c60b3f21cf545ffc61877d))
 
-## [1.0.1](https://github.com/woodleighschool/assetcache-exporter/compare/1.0.0...1.0.1) (2026-08-11)
+## [1.0.1](https://github.com/woodleighschool/assetcache-exporter/compare/v1.0.0...v1.0.1) (2026-08-11)
 
 
 ### Bug Fixes
