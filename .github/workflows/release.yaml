@@ -34,7 +34,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Mise
-        uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # v5.2.4
+        uses: jdx/mise-action@6612f0ef07ed2a736cd1e00a94a065522dd41195 # v5.2.5
         with:
           cache: false
           experimental: true
@@ -59,7 +59,7 @@ jobs:
 
       - name: Import Developer ID Application certificate
         id: application-certificate
-        uses: apple-actions/import-codesign-certs@77ba2a2a8f5cfc8c405ebf3159f767c323e238f9 # v7.1.0
+        uses: apple-actions/import-codesign-certs@288b8ec97b82c66b6f2a6baaf7acc8dfbcbe331c # v7.2.0
         with:
           p12-file-base64: ${{ secrets.APPLE_DEVELOPER_ID_APPLICATION_P12_BASE64 }}
           p12-password: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
@@ -97,7 +97,7 @@ jobs:
           echo "root=${PAYLOAD_ROOT}" >> "${GITHUB_OUTPUT}"
 
       - name: Import Developer ID Installer certificate
-        uses: apple-actions/import-codesign-certs@77ba2a2a8f5cfc8c405ebf3159f767c323e238f9 # v7.1.0
+        uses: apple-actions/import-codesign-certs@288b8ec97b82c66b6f2a6baaf7acc8dfbcbe331c # v7.2.0
         with:
           create-keychain: false
           keychain-password: ${{ steps.application-certificate.outputs.keychain-password }}
