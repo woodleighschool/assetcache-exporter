@@ -3,6 +3,7 @@ package assetcache
 import (
 	"context"
 	"errors"
+	"net"
 	"testing"
 	"time"
 
@@ -45,6 +46,100 @@ func TestCollectorKeepsMetricsWhenStatusFails(t *testing.T) {
 	}
 	if hasMetric(families, "assetcache_active") {
 		t.Fatal("did not expect status metrics after status source failure")
+	}
+	if hasMetric(families, "assetcache_tcp_connect_success") || hasMetric(families, "assetcache_listen_port") {
+		t.Fatal("did not expect endpoint observations after status source failure")
+	}
+}
+
+func TestCollectorTCPObservation(t *testing.T) {
+	for _, tt := range []struct {
+		name, network, ip string
+	}{
+		{"IPv4", "tcp4", "127.0.0.1"},
+		{"IPv6", "tcp6", "::1"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			listener, err := net.ListenTCP(tt.network, &net.TCPAddr{IP: net.ParseIP(tt.ip)})
+			if err != nil {
+				if tt.network == "tcp6" {
+					t.Skipf("IPv6 loopback unavailable: %v", err)
+				}
+				t.Fatalf("listen: %v", err)
+			}
+			t.Cleanup(func() { _ = listener.Close() })
+			port := listener.Addr().(*net.TCPAddr).Port
+			status := Status{Activated: true, Active: true, Port: &port, PrivateAddresses: []string{"invalid", "192.0.2.10", tt.ip}}
+
+			for _, connected := range []bool{true, false} {
+				if !connected {
+					if err := listener.Close(); err != nil {
+						t.Fatalf("close listener: %v", err)
+					}
+				}
+				collector := NewCollector(fakeStatusReader{status: status}, fakeMetricsReader{}, time.Second, nil)
+				registry := prometheus.NewPedanticRegistry()
+				registry.MustRegister(collector)
+				families, err := registry.Gather()
+				if err != nil {
+					t.Fatalf("gather metrics: %v", err)
+				}
+				if got := metricValue(t, families, "assetcache_tcp_connect_success"); got != boolFloat(connected) {
+					t.Fatalf("TCP success = %v, want connected=%v", got, connected)
+				}
+				if got := metricValue(t, families, "assetcache_listen_port"); got != float64(port) {
+					t.Fatalf("listen port = %v, want %d", got, port)
+				}
+				for _, name := range []string{"assetcache_active", "assetcache_status_up", "assetcache_metrics_db_up", "assetcache_scrape_success"} {
+					if got := metricValue(t, families, name); got != 1 {
+						t.Fatalf("%s = %v, want 1 regardless of TCP outcome", name, got)
+					}
+				}
+			}
+		})
+	}
+}
+
+func TestCollectorOmitsUnattemptedTCPObservation(t *testing.T) {
+	port, zero, invalid := 54321, 0, 65536
+	for _, tt := range []struct {
+		name    string
+		status  Status
+		timeout time.Duration
+	}{
+		{"inactive", Status{Port: &port, PrivateAddresses: []string{"127.0.0.1"}}, time.Second},
+		{"missing port", Status{Active: true, PrivateAddresses: []string{"127.0.0.1"}}, time.Second},
+		{"zero port", Status{Active: true, Port: &zero, PrivateAddresses: []string{"127.0.0.1"}}, time.Second},
+		{"invalid port", Status{Active: true, Port: &invalid, PrivateAddresses: []string{"127.0.0.1"}}, time.Second},
+		{"missing addresses", Status{Active: true, Port: &port}, time.Second},
+		{"unavailable address", Status{Active: true, Port: &port, PrivateAddresses: []string{"192.0.2.10"}}, time.Second},
+		{"invalid address", Status{Active: true, Port: &port, PrivateAddresses: []string{"invalid"}}, time.Second},
+		{"expired budget", Status{Active: true, Port: &port, PrivateAddresses: []string{"127.0.0.1"}}, 0},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			registry := prometheus.NewPedanticRegistry()
+			registry.MustRegister(NewCollector(fakeStatusReader{status: tt.status}, fakeMetricsReader{}, tt.timeout, nil))
+			families, err := registry.Gather()
+			if err != nil {
+				t.Fatalf("gather metrics: %v", err)
+			}
+			if hasMetric(families, "assetcache_tcp_connect_success") {
+				t.Fatal("unattempted TCP check must be absent")
+			}
+			if got := metricValue(t, families, "assetcache_active"); got != boolFloat(tt.status.Active) {
+				t.Fatalf("active = %v, want %v", got, tt.status.Active)
+			}
+			if got := metricValue(t, families, "assetcache_scrape_success"); got != 1 {
+				t.Fatalf("scrape success = %v, want 1", got)
+			}
+			if tt.status.Port == nil {
+				if hasMetric(families, "assetcache_listen_port") {
+					t.Fatal("unreported port must be absent")
+				}
+			} else if got := metricValue(t, families, "assetcache_listen_port"); got != float64(*tt.status.Port) {
+				t.Fatalf("listen port = %v, want %d", got, *tt.status.Port)
+			}
+		})
 	}
 }
 

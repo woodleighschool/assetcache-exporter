@@ -16,6 +16,8 @@ const defaultStatusCommand = "/usr/bin/AssetCacheManagerUtil"
 type Status struct {
 	Activated               bool
 	Active                  bool
+	Port                    *int
+	PrivateAddresses        []string
 	CacheUsedBytes          float64
 	CacheLimitBytes         float64
 	CacheFreeBytes          float64
@@ -72,29 +74,31 @@ type statusEnvelope struct {
 }
 
 type statusPayload struct {
-	Activated                    *bool   `json:"Activated"`
-	Active                       *bool   `json:"Active"`
-	CacheUsed                    float64 `json:"CacheUsed"`
-	CacheLimit                   float64 `json:"CacheLimit"`
-	CacheFree                    float64 `json:"CacheFree"`
-	PersonalCacheUsed            float64 `json:"PersonalCacheUsed"`
-	PersonalCacheLimit           float64 `json:"PersonalCacheLimit"`
-	PersonalCacheFree            float64 `json:"PersonalCacheFree"`
-	MaxCachePressureLast1Hour    float64 `json:"MaxCachePressureLast1Hour"`
-	CacheStatus                  string  `json:"CacheStatus"`
-	StartupStatus                string  `json:"StartupStatus"`
-	RegistrationStatus           int     `json:"RegistrationStatus"`
-	Parents                      []any   `json:"Parents"`
-	Peers                        []any   `json:"Peers"`
-	TotalBytesAreSince           string  `json:"TotalBytesAreSince"`
-	TotalBytesDropped            float64 `json:"TotalBytesDropped"`
-	TotalBytesImported           float64 `json:"TotalBytesImported"`
-	TotalBytesReturnedToChildren float64 `json:"TotalBytesReturnedToChildren"`
-	TotalBytesReturnedToClients  float64 `json:"TotalBytesReturnedToClients"`
-	TotalBytesReturnedToPeers    float64 `json:"TotalBytesReturnedToPeers"`
-	TotalBytesStoredFromOrigin   float64 `json:"TotalBytesStoredFromOrigin"`
-	TotalBytesStoredFromParents  float64 `json:"TotalBytesStoredFromParents"`
-	TotalBytesStoredFromPeers    float64 `json:"TotalBytesStoredFromPeers"`
+	Activated                    *bool    `json:"Activated"`
+	Active                       *bool    `json:"Active"`
+	Port                         *int     `json:"Port"`
+	PrivateAddresses             []string `json:"PrivateAddresses"`
+	CacheUsed                    float64  `json:"CacheUsed"`
+	CacheLimit                   float64  `json:"CacheLimit"`
+	CacheFree                    float64  `json:"CacheFree"`
+	PersonalCacheUsed            float64  `json:"PersonalCacheUsed"`
+	PersonalCacheLimit           float64  `json:"PersonalCacheLimit"`
+	PersonalCacheFree            float64  `json:"PersonalCacheFree"`
+	MaxCachePressureLast1Hour    float64  `json:"MaxCachePressureLast1Hour"`
+	CacheStatus                  string   `json:"CacheStatus"`
+	StartupStatus                string   `json:"StartupStatus"`
+	RegistrationStatus           int      `json:"RegistrationStatus"`
+	Parents                      []any    `json:"Parents"`
+	Peers                        []any    `json:"Peers"`
+	TotalBytesAreSince           string   `json:"TotalBytesAreSince"`
+	TotalBytesDropped            float64  `json:"TotalBytesDropped"`
+	TotalBytesImported           float64  `json:"TotalBytesImported"`
+	TotalBytesReturnedToChildren float64  `json:"TotalBytesReturnedToChildren"`
+	TotalBytesReturnedToClients  float64  `json:"TotalBytesReturnedToClients"`
+	TotalBytesReturnedToPeers    float64  `json:"TotalBytesReturnedToPeers"`
+	TotalBytesStoredFromOrigin   float64  `json:"TotalBytesStoredFromOrigin"`
+	TotalBytesStoredFromParents  float64  `json:"TotalBytesStoredFromParents"`
+	TotalBytesStoredFromPeers    float64  `json:"TotalBytesStoredFromPeers"`
 }
 
 func parseStatus(data []byte) (Status, error) {
@@ -122,6 +126,8 @@ func parseStatus(data []byte) (Status, error) {
 	return Status{
 		Activated:               *payload.Activated,
 		Active:                  *payload.Active,
+		Port:                    payload.Port,
+		PrivateAddresses:        payload.PrivateAddresses,
 		CacheUsedBytes:          payload.CacheUsed,
 		CacheLimitBytes:         payload.CacheLimit,
 		CacheFreeBytes:          payload.CacheFree,

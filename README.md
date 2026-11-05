@@ -37,7 +37,9 @@ A Grafana dashboard is available in [`dashboard.json`](dashboard.json).
 
 | Metric                                       | Meaning                                                   |
 | -------------------------------------------- | --------------------------------------------------------- |
-| `assetcache_active`                          | Whether Content Caching is active                         |
+| `assetcache_active`                          | Whether Apple reports Content Caching as active           |
+| `assetcache_listen_port`                     | Reported TCP listening port, when present                 |
+| `assetcache_tcp_connect_success`             | Whether an attempted local TCP connection succeeded       |
 | `assetcache_cache_used_bytes`                | Logical bytes held in the cache                           |
 | `assetcache_cache_limit_bytes`               | Configured cache limit                                    |
 | `assetcache_cache_pressure_ratio`            | Maximum cache pressure during the last hour               |
@@ -51,6 +53,10 @@ A Grafana dashboard is available in [`dashboard.json`](dashboard.json).
 | `assetcache_scrape_success`                  | Whether both sources succeeded                            |
 
 Interval observations are gauges. Apple can omit zero rows while idle, so an old interval timestamp does not itself mean collection failed.
+
+The TCP check uses the reported `Port` and the first `PrivateAddresses` entry that is still assigned to a local interface. IPv6 link-local addresses require a zone. It connects and immediately closes without sending a request, using the time remaining in the status collection timeout. A successful connection establishes local TCP connectivity only; it does not verify content delivery or reachability from clients.
+
+`assetcache_tcp_connect_success` is 1 for a successful connection and 0 for a failed attempt. It is absent when status collection fails, the service is inactive, the port is missing or outside 1–65535, no reported address is usable locally, or the status timeout has already expired. An absent check is not a failed connection. `assetcache_listen_port` preserves the reported value, including zero, and is absent when Apple omits it. The TCP result does not affect `assetcache_active`, `assetcache_status_up`, `assetcache_metrics_db_up`, or `assetcache_scrape_success`.
 
 The exporter opens `/Library/Application Support/Apple/AssetCache/Metrics/Metrics.db` read-only. An incompatible schema sets `assetcache_metrics_db_up` to zero while the HTTP server and status collection continue.
 

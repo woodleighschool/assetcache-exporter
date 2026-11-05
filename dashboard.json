@@ -97,7 +97,7 @@
           "refId": "A"
         }
       ],
-      "title": "Content Caching",
+      "title": "Reported state",
       "type": "stat"
     },
     {
@@ -128,7 +128,7 @@
       },
       "gridPos": {
         "h": 4,
-        "w": 8,
+        "w": 4,
         "x": 4,
         "y": 0
       },
@@ -158,12 +158,106 @@
           "editorMode": "builder",
           "expr": "assetcache_status_info{instance=~\"$instance\"}",
           "instant": true,
-          "legendFormat": "{{cache_status}} · startup {{startup_status}} · registration {{registration_status}}",
+          "legendFormat": "{{cache_status}}",
           "range": false,
           "refId": "A"
         }
       ],
-      "title": "Status",
+      "title": "Cache status",
+      "type": "stat"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "A TCP connection to the first reported address still assigned locally. This does not test HTTP responses, content delivery, or reachability from clients. Not checked means inactive, unavailable endpoint, failed status collection, or no remaining status timeout.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [
+            {
+              "options": {
+                "-1": {
+                  "color": "text",
+                  "index": 0,
+                  "text": "Not checked"
+                },
+                "0": {
+                  "color": "red",
+                  "index": 1,
+                  "text": "Failed"
+                },
+                "1": {
+                  "color": "green",
+                  "index": 2,
+                  "text": "Connected"
+                }
+              },
+              "type": "value"
+            }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "text",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 0
+              },
+              {
+                "color": "green",
+                "value": 1
+              }
+            ]
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 8,
+        "y": 0
+      },
+      "id": 19,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "percentChangeColorMode": "standard",
+        "reduceOptions": {
+          "calcs": ["lastNotNull"],
+          "fields": "",
+          "values": false
+        },
+        "showPercentChange": false,
+        "textMode": "auto",
+        "wideLayout": true
+      },
+      "pluginVersion": "12.4.1",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "${DS_PROMETHEUS}"
+          },
+          "editorMode": "code",
+          "expr": "assetcache_tcp_connect_success{instance=~\"$instance\"} or (assetcache_status_up{instance=~\"$instance\"} * 0 - 1)",
+          "instant": true,
+          "legendFormat": "TCP connection",
+          "range": false,
+          "refId": "A"
+        }
+      ],
+      "title": "Local TCP connection",
       "type": "stat"
     },
     {

@@ -35,7 +35,19 @@ var (
 	)
 	activeDesc = prometheus.NewDesc(
 		"assetcache_active",
-		"Whether Content Caching is active.",
+		"Whether Apple reports Content Caching as active.",
+		nil,
+		nil,
+	)
+	listenPortDesc = prometheus.NewDesc(
+		"assetcache_listen_port",
+		"TCP listening port reported by AssetCacheManagerUtil, when present.",
+		nil,
+		nil,
+	)
+	tcpConnectSuccessDesc = prometheus.NewDesc(
+		"assetcache_tcp_connect_success",
+		"Whether a local TCP connection to the first usable reported address and port succeeded. Absent when not checked.",
 		nil,
 		nil,
 	)
@@ -204,6 +216,8 @@ var allDescs = []*prometheus.Desc{
 	metricsDBUpDesc,
 	activatedDesc,
 	activeDesc,
+	listenPortDesc,
+	tcpConnectSuccessDesc,
 	statusInfoDesc,
 	cacheUsedBytesDesc,
 	cacheLimitBytesDesc,

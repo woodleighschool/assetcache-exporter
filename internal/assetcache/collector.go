@@ -96,6 +96,12 @@ func (c *Collector) collectStatus(ch chan<- prometheus.Metric) bool {
 	emitCounter(ch, storedBytesTotalDesc, status.BytesStoredFromPeers, "peers")
 	emitCounter(ch, importedBytesTotalDesc, status.BytesImportedTotal)
 	emitCounter(ch, droppedBytesTotalDesc, status.BytesDroppedTotal)
+	if status.Port != nil {
+		ch <- prometheus.MustNewConstMetric(listenPortDesc, prometheus.GaugeValue, float64(*status.Port))
+	}
+	if success, checked := tcpConnect(ctx, status); checked {
+		ch <- prometheus.MustNewConstMetric(tcpConnectSuccessDesc, prometheus.GaugeValue, boolFloat(success))
+	}
 	return true
 }
 

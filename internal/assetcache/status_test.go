@@ -1,6 +1,7 @@
 package assetcache
 
 import (
+	"slices"
 	"testing"
 	"time"
 )
@@ -11,6 +12,8 @@ func TestParseStatus(t *testing.T) {
 		"result": {
 			"Activated": true,
 			"Active": true,
+			"Port": 54321,
+			"PrivateAddresses": ["192.0.2.10", "2001:db8::10"],
 			"CacheUsed": 40520685527,
 			"CacheLimit": 199000000000,
 			"CacheFree": 141430352896,
@@ -42,6 +45,12 @@ func TestParseStatus(t *testing.T) {
 	if !status.Activated || !status.Active {
 		t.Fatalf("expected active and activated status, got %+v", status)
 	}
+	if status.Port == nil || *status.Port != 54321 {
+		t.Fatalf("port = %v, want 54321", status.Port)
+	}
+	if !slices.Equal(status.PrivateAddresses, []string{"192.0.2.10", "2001:db8::10"}) {
+		t.Fatalf("private addresses = %v", status.PrivateAddresses)
+	}
 	if got, want := status.MaxCachePressureRatio, 0.4; got != want {
 		t.Fatalf("pressure ratio = %v, want %v", got, want)
 	}
@@ -57,6 +66,30 @@ func TestParseStatus(t *testing.T) {
 	}
 	if got, want := status.BytesStoredFromPeers, float64(80); got != want {
 		t.Fatalf("bytes stored from peers = %v, want %v", got, want)
+	}
+}
+
+func TestParseStatusWithoutEndpoint(t *testing.T) {
+	for _, tt := range []struct {
+		data        string
+		portPresent bool
+	}{
+		{`{"result":{"Activated":false,"Active":false}}`, false},
+		{`{"result":{"Activated":false,"Active":false,"Port":0,"PrivateAddresses":[]}}`, true},
+	} {
+		status, err := parseStatus([]byte(tt.data))
+		if err != nil {
+			t.Fatalf("parse status without endpoint: %v", err)
+		}
+		if (status.Port != nil) != tt.portPresent {
+			t.Fatalf("port present = %v, want %v", status.Port != nil, tt.portPresent)
+		}
+		if status.Port != nil && *status.Port != 0 {
+			t.Fatalf("port = %v, want absent or zero", *status.Port)
+		}
+		if len(status.PrivateAddresses) != 0 {
+			t.Fatalf("unexpected addresses: %v", status.PrivateAddresses)
+		}
 	}
 }
 
