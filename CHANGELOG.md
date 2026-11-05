@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/woodleighschool/assetcache-exporter/compare/v1.4.0...v1.5.0) (2026-11-05)
+
+
+### Features
+
+* **collector:** observe local TCP connectivity ([7c9d821](https://github.com/woodleighschool/assetcache-exporter/commit/7c9d82110533b4eb9c79c36271a20f258457370d))
+
+
+### Bug Fixes
+
+* **go:** update module modernc.org/sqlite (v1.61.0 → v1.61.1) ([#76](https://github.com/woodleighschool/assetcache-exporter/issues/76)) ([f70fdf7](https://github.com/woodleighschool/assetcache-exporter/commit/f70fdf712e0c54a5718f9ae90d793faa6417e2fa))
+
 ## [1.4.0](https://github.com/woodleighschool/assetcache-exporter/compare/v1.3.0...v1.4.0) (2026-10-22)
 
 
