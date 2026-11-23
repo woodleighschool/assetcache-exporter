@@ -16,7 +16,7 @@ lockfile = true
 run = "go mod download"
 
 [tasks.build]
-description = "Build the macOS arm64 binary"
+description = "macOS arm64"
 run = "CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o assetcache_exporter ./cmd/assetcache_exporter"
 
 [tasks.tidy]
@@ -29,7 +29,6 @@ run = "go mod tidy -diff"
 run = "govulncheck ./..."
 
 [tasks.test]
-description = "Vet Go code and run race-enabled tests"
 run = ["go vet ./...", "go test -race -count=1 ./..."]
 
 [tasks.lint-fix]
