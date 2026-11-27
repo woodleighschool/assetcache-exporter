@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/woodleighschool/assetcache-exporter/compare/v1.5.1...v1.5.2) (2026-11-27)
+
+
+### Bug Fixes
+
+* **go:** update module modernc.org/sqlite (v1.62.0 → v1.63.0) ([#91](https://github.com/woodleighschool/assetcache-exporter/issues/91)) ([44b52b5](https://github.com/woodleighschool/assetcache-exporter/commit/44b52b5fecb65575f93930b772cd2010ed776bec))
+
 ## [1.5.1](https://github.com/woodleighschool/assetcache-exporter/compare/v1.5.0...v1.5.1) (2026-11-11)
 
 
